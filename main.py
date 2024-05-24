@@ -9,7 +9,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.options import Options
 
 from time import sleep
-from random import randint
+import random
 
 from mierz_czas import mierz_czas
 
@@ -82,6 +82,6 @@ while True:
     vote()
     print(f"--------------------------------------------------------------")
 
-    seconds_to_wait = randint(120, 200)
+    seconds_to_wait = round(random.uniform(135, 165), 2)
     print(f"Gonna wait {seconds_to_wait} seconds\n\n")
     sleep(seconds_to_wait)
