@@ -25,7 +25,7 @@ chromedriver_autoinstaller_fix.install()
 @mierz_czas
 def vote():
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    # chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--incognito")
 
