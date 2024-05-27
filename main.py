@@ -46,13 +46,9 @@ IGNORED_EXCEPTIONS = (
 
 to_sleep_if_error = 4000
 
-to_sleep_between_actions = []
-for _ in range(100):
-    to_sleep_between_actions.append(round(random.uniform(0.5, 1.5), 2))
-
 
 def sleep_between_actions():
-    sleep(random.choice(to_sleep_between_actions))
+    sleep(round(random.uniform(0.5, 1.5), 2))
 
 
 chromedriver_autoinstaller_fix.install()
@@ -119,7 +115,6 @@ def vote() -> str:
     vote_button = driver.find_element(By.CLASS_NAME, "buttonV")
     sleep_between_actions()
     vote_button.click()
-
 
     # Detect message
     try:
