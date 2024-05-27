@@ -140,8 +140,10 @@ def vote() -> str:
 iteration = 0
 while True:
     iteration += 1
-    logging.log(logging.DEBUG, f"-------------------- Iteracja {iteration} --------------------")
-    print(f"-------------------- Iteracja {iteration} --------------------")
+    message_to_send = f"{datetime.now()} ----------- Iteracja {iteration} -----------"
+
+    logging.log(logging.DEBUG, message_to_send)
+    print(message_to_send)
     vote()
     print(f"--------------------------------------------------------------")
 
