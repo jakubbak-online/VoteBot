@@ -14,6 +14,9 @@ from time import sleep
 import random
 import logging
 from datetime import datetime
+import re
+
+from user_agents import user_agents
 
 # timing decorator
 from mierz_czas import mierz_czas
@@ -34,68 +37,95 @@ console.setLevel(logging.INFO)
 formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
 console.setFormatter(formatter)
 
-
+# --- CONSTANTS ---
 IGNORED_EXCEPTIONS = (
     NoSuchElementException,
     StaleElementReferenceException,
     TimeoutException,
 )
 
+to_sleep_if_error = 1200
+to_sleep_between_actions = []
+for _ in range(100):
+    to_sleep_between_actions.append(round(random.uniform(0.5, 1.5), 2))
+
 chromedriver_autoinstaller_fix.install()
 
 
 @mierz_czas
-def vote():
+def vote() -> str:
     # define options
     chrome_options = Options()
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--incognito")
 
+    # disable the AutomationControlled feature of Blink rendering engine
+    chrome_options.add_argument('--disable-blink-features=AutomationControlled')
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    chrome_options.add_experimental_option("useAutomationExtension", False)
+
     # headless flags as a bot
     # chrome_options.add_argument("--headless")
 
+    user_agent_to_use = random.choice(user_agents)
+    chrome_options.add_argument(f"--user-agent={user_agent_to_use}")
+
     # instantiate driver
     driver = webdriver.Chrome(options=chrome_options)
+    driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
     driver.minimize_window()
+
+    driver.execute_cdp_cmd("Network.setUserAgentOverride", {"userAgent": user_agent_to_use})
+
+    # Check user agent
+    print(driver.execute_script("return navigator.userAgent"))
 
     site_link = "https://www.granice.pl/biblioteki"
 
-    useragentarray = [
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
-    ]
-
     driver.get(site_link)
     driver.implicitly_wait(3)
+
+    sleep(random.choice(to_sleep_between_actions))
 
     wait = WebDriverWait(driver, 30)
 
     consent_element = wait.until(expected_conditions.element_to_be_clickable((By.CLASS_NAME, 'fc-button-label')))
     consent_element.click()
 
-    driver.implicitly_wait(15)
+    # driver.implicitly_wait(15)
+    sleep(random.choice(to_sleep_between_actions))
 
     search_city = wait.until(expected_conditions.element_to_be_clickable((By.ID, "search_city")))
+
+    sleep(random.choice(to_sleep_between_actions))
+    driver.execute_script(f'window.scrollTo(0, {random.randint(500, 756)})')
+
+    sleep(random.choice(to_sleep_between_actions))
     search_city.click()
 
     search_city.send_keys("Jastrzębie-Zdrój")
+    sleep(random.choice(to_sleep_between_actions))
 
     first_element = driver.find_element(By.CLASS_NAME, "ui-menu-item-wrapper")
+    sleep(random.choice(to_sleep_between_actions))
     first_element.click()
 
     vote_button = driver.find_element(By.CLASS_NAME, "buttonV")
+    sleep(random.choice(to_sleep_between_actions))
     vote_button.click()
 
+
+    # Detect message
     try:
         message = driver.find_element(By.CLASS_NAME, "success-message").text
     except NoSuchElementException:
         message = driver.find_element(By.CLASS_NAME, "error-message").text
-    print(message)
 
-    sleep(5)
+    if bool(re.search(r"bot", message)) is True:
+        print(f"Sleeping {to_sleep_if_error} seconds")
+        sleep(to_sleep_if_error)
+
+    print(message)
     return message
 
     # driver.close()
@@ -104,11 +134,11 @@ def vote():
 iteration = 0
 while True:
     iteration += 1
+    logging.log(logging.DEBUG, f"-------------------- Iteracja {iteration} --------------------")
     print(f"-------------------- Iteracja {iteration} --------------------")
-    returned_message = vote()
-    print(returned_message)
+    vote()
     print(f"--------------------------------------------------------------")
 
-    seconds_to_wait = round(random.uniform(135, 165), 2)
+    seconds_to_wait = round(random.uniform(160, 190), 2)
     print(f"Gonna wait {seconds_to_wait} seconds\n\n")
     sleep(seconds_to_wait)
