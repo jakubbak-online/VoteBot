@@ -1,3 +1,4 @@
+# selenium imports
 import chromedriver_autoinstaller_fix
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -8,10 +9,31 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.options import Options
 
+# std library
 from time import sleep
 import random
+import logging
+from datetime import datetime
 
+# timing decorator
 from mierz_czas import mierz_czas
+
+
+# logging setup
+log_path = f"logs/{datetime.now().date()}_{datetime.now().timestamp()}.log"
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    datefmt='%m-%d %H:%M',
+                    filename=log_path,
+                    filemode='x')
+
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+console.setFormatter(formatter)
+
 
 IGNORED_EXCEPTIONS = (
     NoSuchElementException,
@@ -24,15 +46,19 @@ chromedriver_autoinstaller_fix.install()
 
 @mierz_czas
 def vote():
+    # define options
     chrome_options = Options()
-    # chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--incognito")
 
+    # headless flags as a bot
+    # chrome_options.add_argument("--headless")
+
+    # instantiate driver
     driver = webdriver.Chrome(options=chrome_options)
     driver.minimize_window()
 
-    link_do_strony = "https://www.granice.pl/biblioteki"
+    site_link = "https://www.granice.pl/biblioteki"
 
     useragentarray = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
@@ -42,7 +68,7 @@ def vote():
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
     ]
 
-    driver.get(link_do_strony)
+    driver.get(site_link)
     driver.implicitly_wait(3)
 
     wait = WebDriverWait(driver, 30)
@@ -79,7 +105,8 @@ iteration = 0
 while True:
     iteration += 1
     print(f"-------------------- Iteracja {iteration} --------------------")
-    vote()
+    returned_message = vote()
+    print(returned_message)
     print(f"--------------------------------------------------------------")
 
     seconds_to_wait = round(random.uniform(135, 165), 2)
