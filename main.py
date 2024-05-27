@@ -44,10 +44,16 @@ IGNORED_EXCEPTIONS = (
     TimeoutException,
 )
 
-to_sleep_if_error = 1200
+to_sleep_if_error = 4000
+
 to_sleep_between_actions = []
 for _ in range(100):
     to_sleep_between_actions.append(round(random.uniform(0.5, 1.5), 2))
+
+
+def sleep_between_actions():
+    sleep(random.choice(to_sleep_between_actions))
+
 
 chromedriver_autoinstaller_fix.install()
 
@@ -85,7 +91,7 @@ def vote() -> str:
     driver.get(site_link)
     driver.implicitly_wait(3)
 
-    sleep(random.choice(to_sleep_between_actions))
+    sleep_between_actions()
 
     wait = WebDriverWait(driver, 30)
 
@@ -93,25 +99,25 @@ def vote() -> str:
     consent_element.click()
 
     # driver.implicitly_wait(15)
-    sleep(random.choice(to_sleep_between_actions))
+    sleep_between_actions()
 
     search_city = wait.until(expected_conditions.element_to_be_clickable((By.ID, "search_city")))
 
-    sleep(random.choice(to_sleep_between_actions))
+    sleep_between_actions()
     driver.execute_script(f'window.scrollTo(0, {random.randint(500, 756)})')
 
-    sleep(random.choice(to_sleep_between_actions))
+    sleep_between_actions()
     search_city.click()
 
     search_city.send_keys("Jastrzębie-Zdrój")
-    sleep(random.choice(to_sleep_between_actions))
+    sleep_between_actions()
 
     first_element = driver.find_element(By.CLASS_NAME, "ui-menu-item-wrapper")
-    sleep(random.choice(to_sleep_between_actions))
+    sleep_between_actions()
     first_element.click()
 
     vote_button = driver.find_element(By.CLASS_NAME, "buttonV")
-    sleep(random.choice(to_sleep_between_actions))
+    sleep_between_actions()
     vote_button.click()
 
 
