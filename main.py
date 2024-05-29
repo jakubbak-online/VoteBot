@@ -20,7 +20,7 @@ from user_agents import user_agents
 
 # timing decorator
 from mierz_czas import mierz_czas
-
+from config import to_sleep_if_error, site_link, city_name
 
 # logging setup
 log_path = f"logs/{datetime.now().date()}_{datetime.now().timestamp()}.log"
@@ -43,8 +43,6 @@ IGNORED_EXCEPTIONS = (
     StaleElementReferenceException,
     TimeoutException,
 )
-
-to_sleep_if_error = 4000
 
 
 def sleep_between_actions():
@@ -82,8 +80,6 @@ def vote() -> str:
     # Check user agent
     print(driver.execute_script("return navigator.userAgent"))
 
-    site_link = "https://www.granice.pl/biblioteki"
-
     driver.get(site_link)
     driver.implicitly_wait(3)
 
@@ -105,7 +101,7 @@ def vote() -> str:
     sleep_between_actions()
     search_city.click()
 
-    search_city.send_keys("Jastrzębie-Zdrój")
+    search_city.send_keys(city_name)
     sleep_between_actions()
 
     first_element = driver.find_element(By.CLASS_NAME, "ui-menu-item-wrapper")
