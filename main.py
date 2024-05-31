@@ -20,7 +20,7 @@ from user_agents import user_agents
 
 # timing decorator
 from mierz_czas import mierz_czas
-from config import to_sleep_if_error, site_link, city_name
+from config import to_sleep_if_error, site_link, city_name, to_sleep_between_actions, to_sleep_between_actions_spread
 
 # logging setup
 log_path = f"logs/{datetime.now().date()}_{datetime.now().timestamp()}.log"
@@ -138,6 +138,6 @@ while True:
     vote()
     print(f"--------------------------------------------------------------")
 
-    seconds_to_wait = round(random.uniform(160, 190), 2)
+    seconds_to_wait = round(random.uniform(to_sleep_between_actions, to_sleep_between_actions+to_sleep_between_actions_spread), 2)
     print(f"Gonna wait {seconds_to_wait} seconds\n\n")
     sleep(seconds_to_wait)
